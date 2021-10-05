@@ -85,6 +85,7 @@ get '/files/:digest' do
         headers["Content-Type"] = "application/json"
         {:message => "File not found"}.to_json
       end
+    end
   else
     status 422
     headers["Content-Type"] = "application/json"
