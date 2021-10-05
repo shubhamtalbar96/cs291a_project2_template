@@ -131,11 +131,11 @@ delete '/files/:digest' do
       headers["Content-Type"] = "application/json"
       {:message => "File not found"}.to_json
     end
+  else
+    status 422
+    headers["Content-Type"] = "application/json"
+    {:message => "Invalid hex digest #{params['digest'].to_s} passed"}.to_json  
   end
-else
-  status 422
-  headers["Content-Type"] = "application/json"
-  {:message => "Invalid hex digest #{params['digest'].to_s} passed"}.to_json  
 end
 
 
