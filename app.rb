@@ -63,7 +63,7 @@ post '/files/' do
 
   bucket.create_file file, file_name, content_type: params["file"]["type"].to_s
   status 201
-  header["Content-Type"] = "application/json"
+  headers["Content-Type"] = "application/json"
   return {:uploaded => "#{content_hash.split("/").join}"}.to_json
 end
 
