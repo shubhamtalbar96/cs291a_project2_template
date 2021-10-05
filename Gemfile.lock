@@ -79,6 +79,8 @@ GEM
     uber (0.1.0)
 
 PLATFORMS
+  aarch64-linux
+  universal-darwin-20
   x86_64-darwin-19
   x86_64-linux
 
@@ -88,4 +90,4 @@ DEPENDENCIES
   sinatra
 
 BUNDLED WITH
-   2.2.5
+   2.2.28
