@@ -40,7 +40,7 @@ get '/files/' do
 
     status 200
     headers["Content-Type"] = "application/json" 
-    return all_file_names.sort
+    return all_file_names.sort.to_s
     
   rescue Google::Cloud::PermissionDeniedError => e
     status 403
