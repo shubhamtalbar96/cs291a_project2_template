@@ -68,17 +68,19 @@ get '/files/:digest' do
     # get file if it exists 
     file = bucket.file file_name, skip_lookup: true
 
-    if file.exists?
+    if !file.exists?
       status 404
       headers["Content-Type"] = "application/json"
-      return {:message => "Invalid file name passed"}
+      {:message => "Invalid file name passed"}.to_json
     end
 
     if file
       begin
         status 200
         headers["Content-Type"] = file.content_type.to_s
-        content = file.downloaded.read
+        downloaded = file.download
+        downloaded.rewind
+        content = downloaded.read
 
       rescue Google::Cloud::NotFoundError => e
         status 404
