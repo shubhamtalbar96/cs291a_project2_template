@@ -92,7 +92,7 @@ get '/files/:digest' do
   else
     status 422
     headers["Content-Type"] = "application/json"
-    {:message => "Invalid hex digest #{params['digest']} passed"}.to_json
+    {:message => "Invalid hex digest #{params['digest'].to_s} passed"}.to_json
   end
 
 end
@@ -132,6 +132,10 @@ delete '/files/:digest' do
       {:message => "File not found"}.to_json
     end
   end
+else
+  status 422
+  headers["Content-Type"] = "application/json"
+  {:message => "Invalid hex digest #{params['digest'].to_s} passed"}.to_json  
 end
 
 
