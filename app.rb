@@ -51,6 +51,46 @@ get '/files/' do
 end 
 
 get '/files/:digest' do
+  # for getting buckets
+  require 'google/cloud/storage'
+
+  # check if digest provided has hexadecimal characters 
+  if params['digest'][/\h/] && params['digest'].length == 64
+    # getting storage and bucket
+    storage = Google::Cloud::Storage.new(project_id: 'cs291a')
+    bucket = storage.bucket 'cs291project2', skip_lookup: true
+
+    # creating a file name as per GCS specs
+    file_name = params['digest'].insert(2, '/')
+    file_name = file_name.insert(5, '/')
+    file_name.downcase!
+
+    # get file if it exists 
+    file = bucket.file file_name, skip_lookup: true
+
+    if file.exists?
+      status 404
+      headers["Content-Type"] = "application/json"
+      return {:message => "Invalid file name passed"}
+    end
+
+    if file
+      begin
+        status 200
+        headers["Content-Type"] = file.content_type.to_s
+        content = file.downloaded.read
+
+      rescue Google::Cloud::NotFoundError => e
+        status 404
+        headers["Content-Type"] = "application/json"
+        {:message => "File not found"}.to_json
+      end
+  else
+    status 422
+    headers["Content-Type"] = "application/json"
+    {:message => "Invalid hex digest #{params['digest']} passed"}.to_json
+  end
+
 end
 
 delete '/files/:digest' do
