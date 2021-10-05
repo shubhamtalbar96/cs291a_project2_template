@@ -120,7 +120,7 @@ delete '/files/:digest' do
         status 200
         headers["Content-Type"] = "application/json"
         file.delete
-        {:message => "Delted hex digest #{params['digest']}"}.to_json
+        {:message => "Delted hex digest #{file_name.downcase!}"}.to_json
       rescue Google::Cloud::NotFoundError => e
         status 200
         headers["Content-Type"] = "application/json"
