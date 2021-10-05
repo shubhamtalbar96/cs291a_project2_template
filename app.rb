@@ -25,9 +25,12 @@ delete '/files/:digest' do
 
     if file
       begin
+        status 200
         file.delete
+        {:message => "Delted hex digest #{params['digest']}"}.to_json
       rescue Google::Cloud::NotFoundError => e
         status 200
+        {:message => "File could not be deleted"}.to_json
       end
     else
       status 404
