@@ -1,6 +1,10 @@
 require 'sinatra'
 
+# redirect to /files/
 get '/' do
+  status 302
+  new_path = request.base_url.to_s + "/files/" 
+  redirect new_path
 end
 
 get '/files/' do
@@ -26,10 +30,12 @@ delete '/files/:digest' do
     if file
       begin
         status 200
+        headers["Content-Type"] = "application/json"
         file.delete
         {:message => "Delted hex digest #{params['digest']}"}.to_json
       rescue Google::Cloud::NotFoundError => e
         status 200
+        headers["Content-Type"] = "application/json"
         {:message => "File could not be deleted"}.to_json
       end
     else
