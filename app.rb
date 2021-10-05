@@ -6,6 +6,37 @@ end
 get '/files/' do
 end 
 
+delete '/files/:digest' do
+  require 'google/cloud/storage'
+
+  # check if digest provided has hexadecimal characters 
+  if params['digest'][/\h/] && params['digest'].length == 64
+    # getting storage and bucket
+    storage = Google::Cloud::Storage.new(project_id: 'cs291a')
+    bucket = storage.bucket 'cs291project2', skip_lookup: true
+
+    # creating a file name as per GCS specs
+    file_name = params['digest'].insert(2, '/')
+    file_name = file_name.insert(5, '/')
+    file_name.downcase!
+
+    # get file if it exists 
+    file = bucket.file file_name, skip_lookup: true
+
+    if file
+      begin
+        file.delete
+      rescue Google::Cloud::NotFoundError => e
+        status 200
+      end
+    else
+      status 404
+      headers["Content-Type"] = "application/json"
+      {:message => "File not found"}.to_json
+    end
+  end
+end
+
 
 # create a new file
 post '/files/' do
