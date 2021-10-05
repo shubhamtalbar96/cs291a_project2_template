@@ -4,15 +4,57 @@ require 'sinatra'
 get '/' do
   status 302
   new_path = request.base_url.to_s + "/files/"
-  puts "redirected to #{new_path}" 
   redirect new_path
   return {:message => "redirected to #{new_path}"}.to_json
 end
 
+# get names for all the valid files
 get '/files/' do
+  # for getting buckets
+  require 'google/cloud/storage'
+
+  begin
+    # getting storage and bucket
+    storage = Google::Cloud::Storage.new(project_id: 'cs291a')
+    bucket = storage.bucket 'cs291project2', skip_lookup: true
+
+    # get all files
+    all_files = bucket.files
+
+    # get the name of all valid ones
+    all_file_names = Array.new
+    all_files.all { |file|
+      file_name = file.name
+
+      # check validity before pushing
+      file_name_split = file_name.split('/')
+
+      if file_name_split.length == 3 && 
+            file_name_split[0].length == 2 &&
+            file_name_split[1].length == 2 &&
+            file_name_split.join.length == 64  
+
+        all_file_names.push file_name_split.join
+      end
+    }
+
+    status 200
+    headers["Content-Type"] = "application/json" 
+    return all_file_names.sort
+    
+  rescue Google::Cloud::PermissionDeniedError => e
+    status 403
+    headers["Content-Type"] = "application/json"
+    {:message => e.message}.to_json
+  end
+
 end 
 
+get '/files/:digest' do
+end
+
 delete '/files/:digest' do
+  # for getting buckets
   require 'google/cloud/storage'
 
   # check if digest provided has hexadecimal characters 
