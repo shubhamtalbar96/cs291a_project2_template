@@ -3,8 +3,10 @@ require 'sinatra'
 # redirect to /files/
 get '/' do
   status 302
-  new_path = request.base_url.to_s + "/files/" 
+  new_path = request.base_url.to_s + "/files/"
+  puts "redirected to #{new_path}" 
   redirect new_path
+  return {:message => "redirected to #{new_path}"}.to_json
 end
 
 get '/files/' do
