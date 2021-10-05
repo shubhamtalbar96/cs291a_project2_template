@@ -82,7 +82,7 @@ get '/files/:digest' do
         downloaded.rewind
         downloaded.read
         content = downloaded.read
-        {:message => "successfully retrieved hex digest " + file_name.to_s}.to_json
+        {:message => "successfully retrieved hex digest " + params['digest'].to_s}.to_json
       rescue Google::Cloud::NotFoundError => e
         status 404
         headers["Content-Type"] = "application/json"
